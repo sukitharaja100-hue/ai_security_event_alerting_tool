@@ -18,6 +18,15 @@
             🚨 CRITICAL ALERTS DETECTED ({{ data.high_risk }} High Risk Events)
         </div>
     {% endif %}
+    {% if data.alerts %}
+    <div class="alert alert-warning text-center">
+
+        {% for alert in data.alerts %}
+            <p>{{ alert }}</p>
+        {% endfor %}
+
+    </div>
+    {% endif %}
 
     <!-- KPI Cards -->
     <div class="row mb-4 text-center">
@@ -71,7 +80,8 @@
                 <input type="text" name="q"
                        placeholder="Search logs (user/ip/status)"
                        class="form-control">
-            </form>
+            
+                    </form>
 
             <table class="table table-dark table-hover table-bordered">
                 <thead>

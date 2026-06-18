@@ -57,6 +57,24 @@ def get_dashboard_data(query=None):
         cursor.execute("""SELECT ip, COUNT(*) as count FROM logs GROUP BY ip ORDER BY count DESC LIMIT 5""")
     top_ips = cursor.fetchall()
 
+    # AI-like anomaly detection
+    alerts = []
+
+    # Rule 1: Too many failed logins
+    if failed > 20:
+        alerts.append("⚠️ High number of failed login attempts detected")
+
+    # Rule 2: High risk events
+    if high_risk > 10:
+        alerts.append("🚨 Multiple high-risk events detected")
+
+    # Rule 3: Suspicious IP (same IP too many times)
+    cursor.execute("""SELECT ip, COUNT(*) as count FROM logs GROUP BY ip HAVING count > 20""")
+    suspicious_ips = cursor.fetchall()
+
+    for ip in suspicious_ips:
+        alerts.append(f"🚨 Suspicious IP detected: {ip.get('ip')} ({ip.get('count')} attempts)")
+
     conn.close()
 
     return {
@@ -67,5 +85,6 @@ def get_dashboard_data(query=None):
     "logs": logs or [],
     "status_data": status_data or [],
     "timeline": timeline or [],
-    "top_ips": top_ips or []
+    "top_ips": top_ips or [],
+    "alerts": alerts
 }
